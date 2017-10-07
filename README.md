@@ -4,7 +4,7 @@ Client for [Timings API](https://www.github.com/godaddy/timings) to support **Ja
 
 ## Purpose
 
-- Sending performance data from functional tests to the cicd-perf API.
+- Sending performance data from functional tests to the [timings API](https://www.github.com/godaddy/timings).
 - This client makes it easy to communicate with the API without the need to setup your own curl/axios/etc. calls.
 - The response contains the necessary fields to validate/assert the performance results (look for the `assert` field!).
 - The API stores the results in ElasticSearch and can be visualized with Kibana.
