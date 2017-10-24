@@ -20,7 +20,7 @@ To use timings-client-js, add it as a 'devDependency' to your project
 npm install --save-dev timings-client-js
 ```
 
-Add a `.config.js` config file to your project's home folder and edit your default settings
+Add a custom config file to your project's root folder and edit your default settings:
 
 ```javascript
 module.exports = {
@@ -55,17 +55,18 @@ module.exports = {
 
 ## Adding the client to your test scripts
 
-In your test script(s), import the client like this:
+In your test script(s), you have to initiate the client with the name of the custom config file, example:
 
 ```javascript
-const perf = require('timings-client-js');
+const timings = require('timings-client-js');
+const perf = new timings.PUtils('custom_config.js');
 ```
 
 You can now call the different methods from your script. Below is a simple example:
 
 ```javascript
-//”./js/specs/demo-2-perf.js”
-const perf = require('timings-client-js');
+const timings = require('timings-client-js');
+const perf = new timings.PUtils('custom_config.js');
 
 describe('Demo timings-client', function() {
     it('page performance should be within SLA', function() {
