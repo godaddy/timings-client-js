@@ -1,21 +1,15 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 
 const assert = require('chai').assert;
-const nock = require('nock');
 
 const perfUtils = require('../src/perf-utils');
+const perf = new perfUtils.PUtils('.perf_config.js');
 const sampleData = require('./data/sample-data');
 
-describe('Should be able to:', function () {
+describe('Testing against live server - should be able to:', function () {
 
   it('retrieve JS code from [injectjs]', function (done) {
-    nock('http://localhost')
-      .post('/v2/api/cicd/injectjs')
-      .reply(200, {
-        inject_code: 'url: document.location.href'
-      });
-
-    return perfUtils.getInjectJS('navtiming', 'visual_complete')
+    return perf.getInjectJS('navtiming', 'visual_complete')
       .then(response => {
         assert.isString(response.data.inject_code);
         assert.isString(decodeURIComponent(response.data.inject_code));
@@ -29,15 +23,8 @@ describe('Should be able to:', function () {
   });
 
   it('get expected result from [navtiming]', function (done) {
-    nock('http://localhost')
-      .post('/v2/api/cicd/navtiming')
-      .reply(200, {
-        assert: true,
-        export: 'some data'
-      });
-
-    const apiParams = perfUtils.getApiParams({ sla: { pageLoadTime: 2000 }});
-    return perfUtils.navtiming(sampleData.navtiming.injectJS, apiParams)
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 2500 }});
+    return perf.navtiming(sampleData.navtiming.injectJS, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[navtiming] response did not include the [export] key!');
@@ -50,15 +37,8 @@ describe('Should be able to:', function () {
   });
 
   it('get expected result from  [usertiming]', function (done) {
-    const apiParams = perfUtils.getApiParams({ sla: { pageLoadTime: 2000 }});
-    nock('http://localhost')
-      .post('/v2/api/cicd/usertiming')
-      .reply(200, {
-        assert: true,
-        export: 'some other data'
-      });
-
-    return perfUtils.usertiming(sampleData.usertiming.injectJS, apiParams)
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 1000 }});
+    return perf.usertiming(sampleData.usertiming.injectJS, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[usertiming] response did not include the [export] key!');
@@ -71,15 +51,8 @@ describe('Should be able to:', function () {
   });
 
   it('get expected result from  [apitiming]', function (done) {
-    const apiParams = perfUtils.getApiParams({ sla: { pageLoadTime: 2000 }});
-    nock('http://localhost')
-      .post('/v2/api/cicd/apitiming')
-      .reply(200, {
-        assert: true,
-        export: 'lorem ipsum'
-      });
-
-    return perfUtils.apitiming(sampleData.apitiming.timing, sampleData.apitiming.url, apiParams)
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 600 }});
+    return perf.apitiming(sampleData.apitiming.timing, sampleData.apitiming.url, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[apitiming] response did not include the [export] key!');
