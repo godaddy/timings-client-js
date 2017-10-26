@@ -1,6 +1,8 @@
 # timings-client-js
 
-Client for [Timings API](https://www.github.com/godaddy/timings) to support **JavaScript** based test environments
+Client for [Timings API](https://www.github.com/godaddy/timings) to support **JavaScript** based test environments.  
+
+**NOTE**: you need to have a timings API server running in your network to use this client!
 
 ## Purpose
 
@@ -20,7 +22,7 @@ To use timings-client-js, add it as a 'devDependency' to your project
 npm install --save-dev timings-client-js
 ```
 
-Add a custom config file to your project's root folder and edit your default settings:
+Add a custom config file to **your project's root folder** (example: `perftimings.js`) and edit to reflect your environment. These will become the **default** parameters for your tests! You can overwrite parameters for individual tests by using the `getApiParams` method (see sample test below).
 
 ```javascript
 module.exports = {
@@ -32,11 +34,10 @@ module.exports = {
         "baseline": {
             "days": 7,
             "perc": 75,
-            "padding": 1.2,
-            "searchUrl": ""
+            "padding": 1.2
         },
         "flags": {
-            "assertRum": true,
+            "assertBaseline": true,
             "debug": false,
             "esTrace": false,
             "esCreate": false,
@@ -53,13 +54,16 @@ module.exports = {
 };
 ```
 
+You can find a list of all the 'common' parameters here: https://github.com/godaddy/timings#common-parameters-navtiming-usertiming-and-apitiming
+
+
 ## Adding the client to your test scripts
 
-In your test script(s), you have to initiate the client with the name of the custom config file, example:
+In your test script(s), you have to initiate the client with the name of your custom config file, example:
 
 ```javascript
 const timings = require('timings-client-js');
-const perf = new timings.PUtils('custom_config.js');
+const perf = new timings.PUtils('perftimings.js');
 ```
 
 You can now call the different methods from your script. Below is a simple example:
@@ -70,12 +74,10 @@ const perf = new timings.PUtils('custom_config.js');
 
 describe('Demo timings-client', function() {
     it('page performance should be within SLA', function() {
-        console.log("I'm in the navtiming test");
         const perf_params = perf.getApiParams({sla:{pageLoadTime: 3000}, debug: true});
         return perf.getInjectJS('navtiming', 'visual_complete')
             .then((response) => {
-                injectCode = response.data.inject_code;
-                console.log("nav_inject_code :" + injectCode)
+                const injectCode = response.data.inject_code;
                 return browser
                     .url('http://seleniumhq.org/')
                     .isVisible('#header')
@@ -84,12 +86,10 @@ describe('Demo timings-client', function() {
                     .then((response) => {
                         // Grab the browser's response - has the performance data!
                         const injectResponse = response.value;
-                        console.log("PERF-API response: " + JSON.stringify(perf_params, null, 4));
-                        return perf.navtiming(injectResponse, perf_params, null)
+                        return perf.navtiming(injectResponse, perf_params)
                         .then((response) => {
-                                // Grab the API's response - has the assert field!
+                                // Grab the API's response - use the 'assert' field to validate!
                                 const apiResponse = response.data;
-                                console.log("PERF-API response: " + JSON.stringify(apiResponse.export.perf, null, 4));
                                 expect(apiResponse.assert, 'Performance failed! assert field is False').to.be.true;
                             });
                     })
