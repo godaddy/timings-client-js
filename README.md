@@ -14,13 +14,15 @@ Client for [Timings API](https://www.github.com/godaddy/timings) to support **Ja
 
 To learn more about ELK (Elastic Search, LogStash, Kibana). Click Here [https://www.elastic.co/products/kibana](https://www.elastic.co/products/kibana)
 
-## Usage
+## Installation
 
 To use timings-client-js, add it as a 'devDependency' to your project
 
 ```shell
 npm install --save-dev timings-client-js
 ```
+
+## Configuration
 
 Add a custom config file to **your project's root folder** (example: `perftimings.js`) and edit to reflect your environment. These will become the **default** parameters for your tests! You can overwrite parameters for individual tests by using the `getApiParams` method (see sample test below).
 
@@ -57,7 +59,7 @@ module.exports = {
 You can find a list of all the 'common' parameters here: https://github.com/godaddy/timings#common-parameters-navtiming-usertiming-and-apitiming
 
 
-## Adding the client to your test scripts
+## Usage
 
 In your test script(s), you have to initiate the client with the name of your custom config file, example:
 
