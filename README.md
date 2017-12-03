@@ -100,4 +100,4 @@ describe('Demo timings-client', function() {
 });
 ```
 
-For more information about the API: [https://github.com/godaddy/perf-api](https://github.com/godaddy/perf-api/blob/master/README.md)
+For more information about the API: [https://github.com/godaddy/timings](https://github.com/godaddy/timings/blob/master/README.md)
