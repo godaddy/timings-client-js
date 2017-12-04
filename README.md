@@ -1,8 +1,6 @@
 # timings-client-js
 
-Client for [Timings API](https://www.github.com/godaddy/timings) to support **JavaScript** based test environments.  
-
-**NOTE**: you need to have a timings API server running in your network to use this client!
+Client for [Timings API](https://www.github.com/godaddy/timings) to support **JavaScript** based test environments
 
 ## Purpose
 
@@ -24,7 +22,7 @@ npm install --save-dev timings-client-js
 
 ## Configuration
 
-Add a custom config file to **your project's root folder** (example: `perftimings.js`) and edit to reflect your environment. These will become the **default** parameters for your tests! You can overwrite parameters for individual tests by using the `getApiParams` method (see sample test below).
+Add a custom config file to your project's root folder and edit your default settings. Example:
 
 ```javascript
 module.exports = {
@@ -36,7 +34,8 @@ module.exports = {
         "baseline": {
             "days": 7,
             "perc": 75,
-            "padding": 1.2
+            "padding": 1.2,
+            "searchUrl": ""
         },
         "flags": {
             "assertBaseline": true,
@@ -56,48 +55,68 @@ module.exports = {
 };
 ```
 
-You can find a list of all the 'common' parameters here: https://github.com/godaddy/timings#common-parameters-navtiming-usertiming-and-apitiming
+## Instrumenting your test scripts
 
-
-## Usage
-
-In your test script(s), you have to initiate the client with the name of your custom config file, example:
+In your test script(s), you initiate the client with the the `PUtils` class from the `timings-client-js` module. You can pass **just the filename** of your custom config file (file should be in the project root!) to the class. For example:
 
 ```javascript
 const timings = require('timings-client-js');
 const perf = new timings.PUtils('perftimings.js');
 ```
 
-You can now call the different methods from your script. Below is a simple example:
+With the client initiated, you can now call the different methods from your script. **NOTE:** the methods are Promise based! Use async methods like `.then((response) => {})` to capture the responses!
+
+### Client methods
+
+|method|Promise|description|response|
+|-|-|-|-|
+|**getApiParams**|no|grab the (default/custom) parameters to be send to the API|JSON object - refers to the example config file above. Also see the `perf_params` variable in below example|
+|**getInjectJS**|yes|get the "inject code" from the API|Encrypted string in `response.data.inject_code` - Also see the `inject_code` variable in below example|
+|**usertiming**|yes|Post user-timing performance data to the API|JSON object - look for `assert` field!|
+|**navtiming**|yes|Post navigation-timing performance data to the API|JSON object - look for `assert` field!|
+|**apitiming**|yes|Post api-timing performance data to the API|JSON object - look for `assert` field!|
+
+### Example script
+
+Below is a simple test script to demonstrate the instrumentation:
 
 ```javascript
 const timings = require('timings-client-js');
-const perf = new timings.PUtils('custom_config.js');
+const perf = new timings.PUtils('perftimings.js');
 
 describe('Demo timings-client', function() {
     it('page performance should be within SLA', function() {
         const perf_params = perf.getApiParams({sla:{pageLoadTime: 3000}, debug: true});
         return perf.getInjectJS('navtiming', 'visual_complete')
             .then((response) => {
-                const injectCode = response.data.inject_code;
-                return browser
-                    .url('http://seleniumhq.org/')
-                    .isVisible('#header')
-                    .execute('window.performance.mark("visual_complete");')
-                    .execute(decodeURIComponent(injectCode))
-                    .then((response) => {
-                        // Grab the browser's response - has the performance data!
-                        const injectResponse = response.value;
-                        return perf.navtiming(injectResponse, perf_params)
+                inject_code = response.data.inject_code || '';
+                if (inject_code) {
+                    console.log("Encoded INJECT code: " + JSON.stringify(inject_code, null, 4));
+                    return browser
+                        .url('http://seleniumhq.org/')
+                        .isVisible('#header')
+                        .execute('window.performance.mark("visual_complete");')
+                        .execute(decodeURIComponent(inject_code))
                         .then((response) => {
-                                // Grab the API's response - use the 'assert' field to validate!
-                                const apiResponse = response.data;
-                                expect(apiResponse.assert, 'Performance failed! assert field is False').to.be.true;
-                            });
-                    })
+                            // Grab the browser's response - has the performance data!
+                            const browser_response = response.value || {};
+                            if (browser_response) {
+                                console.log("BROWSER response: " + JSON.stringify(browser_response, null, 4));
+                                return perf.navtiming(browser_response, perf_params, null)
+                                .then((response) => {
+                                        // Grab the API's response - has the assert field!
+                                        const api_response = response.data || {};
+                                        if (api_response) {
+                                            console.log("PERF-API response: " + JSON.stringify(api_response.export.perf, null, 4));
+                                            expect(api_response.assert, 'Performance failed! assert field is False').to.be.true;
+                                        }
+                                    });
+                            }
+                        })
+                }
             });
     });
 });
 ```
 
-For more information about the API: [https://github.com/godaddy/perf-api](https://github.com/godaddy/perf-api/blob/master/README.md)
+For more information about the API: [https://github.com/godaddy/timings](https://github.com/godaddy/timings/blob/master/README.md)

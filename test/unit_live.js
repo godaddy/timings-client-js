@@ -23,7 +23,7 @@ describe('Testing against live server - should be able to:', function () {
   });
 
   it('get expected result from [navtiming]', function (done) {
-    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 2500 }});
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 2500 }, debug: true });
     return perf.navtiming(sampleData.navtiming.injectJS, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
