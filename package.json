@@ -1,6 +1,6 @@
 {
     "name": "timings-client-js",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Plugin for perf-api to support JavaScript based test environments",
     "main": "index.js",
     "scripts": {
