@@ -27,6 +27,7 @@ Add a custom config file to your project's root folder and edit your default set
 ```javascript
 module.exports = {
     "PERF_API_URL": "http://<API host>/v2/api/cicd/",
+    "api_timeout": 2000,
     "api_params": {
         "sla": {
             "pageLoadTime": 2000
