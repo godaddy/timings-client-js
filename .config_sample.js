@@ -8,6 +8,7 @@ Please set PERF_API_URL to the correct address of the API!!
 
 module.exports = {
     "PERF_API_URL": "http://localhost/v2/api/cicd/",
+    "api_timeout": 2000,
     "api_params": {
         "sla": {
             "pageLoadTime": 2000

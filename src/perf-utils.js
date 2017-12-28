@@ -1,7 +1,7 @@
 const axios = require('axios');
 const path = require('path');
 
-axios.defaults.timeout = 1000;
+axios.defaults.timeout = 2000;
 axios.defaults.headers.common.Accept = 'application/json';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -9,7 +9,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 class PUtils {
   constructor(customConfig = null) {
-    this.defaultConfig = './.config.js';
+    this.defaultConfig = '../.config_sample.js';
     this.params = this.fetchParams(customConfig);
   }
 
@@ -18,43 +18,69 @@ class PUtils {
     const result = axios
       .post(name, data)
       .catch(function (error) {
-        console.warn(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          return error.response.data;
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          return error.request;
+        }
+        // Something else happened in setting up the request that triggered an Error
+        return error.message;
       });
     return result;
   }
 
   fetchParams(customConfig = null) {
-    const cwd = process.cwd();
-    const fullPath = (customConfig) ? path.resolve(cwd, customConfig) : path.resolve(cwd, this.defaultConfig);
-
-    // Check if config file exists file exists and can be accessed.
-    try {
-      const configFile = require(fullPath);
-      return configFile;
-    } catch (ex) {
-      const configFile = require('../.config_sample.js');
-      return configFile;
+    let configFile;
+    if (customConfig) {
+      const cwd = process.cwd();
+      const fullPath = (customConfig) ? path.resolve(cwd, customConfig) : path.resolve(cwd, this.defaultConfig);
+      // Check if config file exists file exists and can be accessed.
+      try {
+        configFile = require(fullPath);
+        // console.warn('Custom config: [' + fullPath + ']');
+      } catch (ex) {
+        console.warn('timings-client-js - Error reading custom config - switching to default!' + ex.message);
+        configFile = require(this.defaultConfig);
+      }
+    } else {
+      configFile = require(this.defaultConfig);
+      // console.warn('Default config: [' + this.defaultConfig + ']');
     }
+
+    if (configFile.hasOwnProperty('api_timeout')) {
+      const apiTimeout = parseInt(configFile.api_timeout)
+      if (apiTimeout > 2000) {
+        console.warn('timings-client-js - changing API timeout to: ' + apiTimeout);
+        axios.defaults.timeout = apiTimeout;
+      }
+    }
+    return configFile;
   };
 
   getApiParams({ sla, debug, esTrace, esCreate, days, perc, padding, searchUrl, log }) {
     // app_info,platform,browser,environment,team are required values
-    const updatedParams = this.params.api_params;
-    updatedParams.sla = sla || this.params.api_params.sla;
-    updatedParams.flags.debug = debug || this.params.api_params.flags.debug;
-    updatedParams.flags.esTrace = esTrace || this.params.api_params.flags.esTrace;
-    updatedParams.flags.esCreate = esCreate || this.params.api_params.flags.esCreate;
-    updatedParams.baseline.days = days || this.params.api_params.baseline.days;
-    updatedParams.baseline.perc = perc || this.params.api_params.baseline.perc;
-    updatedParams.baseline.padding = padding || this.params.api_params.baseline.padding;
+    const data = this.params.api_params;
+    data.sla = sla || this.params.api_params.sla;
+    data.flags.debug = debug || this.params.api_params.flags.debug;
+    data.flags.esTrace = esTrace || this.params.api_params.flags.esTrace;
+    data.flags.esCreate = esCreate || this.params.api_params.flags.esCreate;
+    data.baseline.days = days || this.params.api_params.baseline.days;
+    data.baseline.perc = perc || this.params.api_params.baseline.perc;
+    data.baseline.padding = padding || this.params.api_params.baseline.padding;
+    data.baseline.searchUrl = searchUrl || '';
 
-    if (searchUrl)
-      updatedParams.baseline.searchUrl = searchUrl;
+    if (!searchUrl)
+      delete data.baseline.searchUrl;
 
-    if (log && typeof log === 'object')
-      updatedParams.log = Object.assign(this.params.api_params.log, log);
-
-    return updatedParams;
+    if (log && typeof log === 'object') {
+      this.params.api_params.log = Object.assign(this.params.api_params.log, log);
+    }
+    return data;
   }
 
   getInjectJS(injectType, visualCompleteMark) {
