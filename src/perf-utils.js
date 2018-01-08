@@ -83,11 +83,14 @@ class PUtils {
     return data;
   }
 
-  getInjectJS(injectType, visualCompleteMark) {
+  getInjectJS(injectType, visualCompleteMark, stripQueryString) {
     const data = {
-      injectType,
-      visualCompleteMark
+      injectType: injectType,
+      visualCompleteMark: visualCompleteMark
     };
+    if (typeof stripQueryString === 'boolean') {
+      data.stripQueryString = stripQueryString;
+    }
     return this.post('injectjs', data);
   }
 
