@@ -111,9 +111,9 @@ describe('Demo timings-client', function() {
 ```
 
 
-### Client methods
+## Client methods
 
-## `getApiParams({ sla, debug, esTrace, esCreate, days, perc, padding, searchUrl, log })`
+### `getApiParams({ sla, debug, esTrace, esCreate, days, perc, padding, searchUrl, log })`
 
 Collect or overwrite the default parameters (see above) to be send to the API. None of the parameters are required. If you submit an empty object, the defaults will be used.
 
@@ -123,9 +123,9 @@ Collect or overwrite the default parameters (see above) to be send to the API. N
 |debug|boolean|`false`|Receive extra debug information from the API
 |esTrace|boolean|`false`|Request Elasticsearch query information from the API
 |esCreate|boolean|`true`|Save the result to elasticsearch
-|days|int|`7`|Number of days to calculate the baseline for
-|perc|int|`75`|Percentile of the baseline to be calculated
-|padding|int|`1.2`|Multiplier to calculate extra padding on top of the baseline
+|days|number|`7`|Number of days to calculate the baseline for
+|perc|number|`75`|Percentile of the baseline to be calculated
+|padding|number|`1.2`|Multiplier to calculate extra padding on top of the baseline
 |searchUrl|string|`''`|Wildcard to use for baseline (instead of using the submitted URL)
 |log|object|-|Object that holds the keys to be logged. Can be used to overwrite the defaults or add extra keys!
 
@@ -166,7 +166,7 @@ Returns:
 
 Notice that the `sla` and the `flags.debug` keys were changed when compared to the defaults!
 
-## `getInjectJS(injectType, visualCompleteMark, stripQueryString)`
+### `getInjectJS(injectType, visualCompleteMark, stripQueryString)`
 
 Get the "inject code" from the API
 
@@ -191,7 +191,7 @@ Returns:
 }
 ```
 
-## `navtiming(injectJS, apiParams)`
+### `navtiming(injectJS, apiParams)`
 
 Post navtiming performance data to the API
 
@@ -200,7 +200,7 @@ Post navtiming performance data to the API
 |injectJS|object|Yes|-|Contains the full response that you received from the browser after injecting the `injectjs` code|
 |apiParams|object|Yes|-|Contains the API params that you retrieved from the `getApiParams()` method|
 
-## `usertiming(injectJS, apiParams)`
+### `usertiming(injectJS, apiParams)`
 
 Post usertiming performance data to the API
 
@@ -209,7 +209,7 @@ Post usertiming performance data to the API
 |injectJS|object|Yes|-|Contains the full response that you received from the browser after injecting the `injectjs` code|
 |apiParams|object|Yes|-|Contains the API params that you retrieved from the `getApiParams()` method|
 
-## `apitiming(timing, url, apiParams)`
+### `apitiming(timing, url, apiParams)`
 
 Post apitiming performance data to the API
 
