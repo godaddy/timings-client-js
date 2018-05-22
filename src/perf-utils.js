@@ -20,18 +20,22 @@ class PUtils {
       .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          return error.response.data;
+          // that falls out of the 2xx range
+          console.warn(
+            `timings-client-js - API Error [${axios.defaults.baseURL}${name}]:\n${JSON.stringify(error.response.data, null, 2)}`
+          );
         } else if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
-          return error.request;
+          console.warn(`timings-client-js - API Error [${axios.defaults.baseURL}${name}]: No response from server!`);
+        } else {
+          // Something else happened in setting up the request that triggered an Error
+          console.warn(`timings-client-js - API Error [${axios.defaults.baseURL}${name}]: ${error.message}`);
         }
-        // Something else happened in setting up the request that triggered an Error
-        return error.message;
+        return (error.message);
       });
-    return result;
+    return (result);
   }
 
   fetchParams(customConfig = null) {
@@ -42,27 +46,25 @@ class PUtils {
       // Check if config file exists file exists and can be accessed.
       try {
         configFile = require(fullPath);
-        // console.warn('Custom config: [' + fullPath + ']');
       } catch (ex) {
         console.warn('timings-client-js - Error reading custom config - switching to default!' + ex.message);
         configFile = require(this.defaultConfig);
       }
     } else {
       configFile = require(this.defaultConfig);
-      // console.warn('Default config: [' + this.defaultConfig + ']');
     }
 
     if (configFile.hasOwnProperty('api_timeout')) {
-      const apiTimeout = parseInt(configFile.api_timeout)
+      const apiTimeout = parseInt(configFile.api_timeout, 10);
       if (apiTimeout > 2000) {
         console.warn('timings-client-js - changing API timeout to: ' + apiTimeout);
         axios.defaults.timeout = apiTimeout;
       }
     }
     return configFile;
-  };
+  }
 
-  getApiParams({ sla, debug, esTrace, esCreate, days, perc, padding, searchUrl, log }) {
+  getApiParams({ sla, debug, multirun, esTrace, esCreate, days, perc, padding, searchUrl, log }) {
     // app_info,platform,browser,environment,team are required values
     const data = this.params.api_params;
     data.sla = sla || this.params.api_params.sla;
@@ -72,11 +74,10 @@ class PUtils {
     data.baseline.days = days || this.params.api_params.baseline.days;
     data.baseline.perc = perc || this.params.api_params.baseline.perc;
     data.baseline.padding = padding || this.params.api_params.baseline.padding;
-    data.baseline.searchUrl = searchUrl || '';
-
-    if (!searchUrl)
-      delete data.baseline.searchUrl;
-
+    if (searchUrl)
+      data.baseline.searchUrl = searchUrl;
+    if (multirun && typeof multirun === 'object')
+      data.multirun = multirun;
     if (log && typeof log === 'object') {
       this.params.api_params.log = Object.assign(this.params.api_params.log, log);
     }

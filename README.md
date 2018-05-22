@@ -2,6 +2,10 @@
 
 Client for [Timings API](https://www.github.com/godaddy/timings) to support **JavaScript** based test environments
 
+## NEW FEATURE [MULTI-RUN]
+
+The client now supports the new `multirun` feature that was introduces in version 1.3.0 of the API. If you want perform multiple runs of the same functional test but only have one of the runs be used for performance assertion, this feature is for you! Simply run your test script in a loop, calling the API during each loop but this time, add the `multirun` key to your POST payload to the `navtiming`, `usertiming` or `apitiming` endpoints. The API will save the performance data and upon the last run, it will pick the 75th percentile result and process that as if it were a normal result. The API will then return the usual response (including the `assert` field!). Hope you like it!
+
 ## Purpose
 
 - Sending performance data from functional tests to the [timings API](https://www.github.com/godaddy/timings).
@@ -35,7 +39,10 @@ module.exports = {
         "baseline": {
             "days": 7,
             "perc": 75,
-            "padding": 1.2
+            "padding": 1.2,
+            "incl": {
+                "env_target": "_log_"
+            }
         },
         "flags": {
             "assertBaseline": true,
@@ -61,11 +68,10 @@ In your test script(s), you initiate the client with the the `PUtils` class from
 
 ```javascript
 const timings = require('timings-client-js');
-const perf = new timings.PUtils('perftimings.js');
+const perf = new timings.PUtils('.perftimings.js');
 ```
 
 With the client initiated, you can now call the different methods from your script. **NOTE:** the methods are Promise based! Use async methods like `.then((response) => {})` to capture the responses!
-
 
 ### Example script
 
@@ -73,7 +79,7 @@ Below is a simple test script to demonstrate the instrumentation:
 
 ```javascript
 const timings = require('timings-client-js');
-const perf = new timings.PUtils('perftimings.js');
+const perf = new timings.PUtils('.perftimings.js');
 
 describe('Demo timings-client', function() {
     it('page performance should be within SLA', function() {
@@ -110,7 +116,6 @@ describe('Demo timings-client', function() {
 });
 ```
 
-
 ## Client methods
 
 ### `getApiParams({ sla, debug, esTrace, esCreate, days, perc, padding, searchUrl, log })`
@@ -119,7 +124,7 @@ Collect or overwrite the default parameters (see above) to be send to the API. N
 
 |param|type|default|description|
 |-|-|-|-|
-|sla|object|-|Overwrite the default `sla` settings. Example:<br>`getApiParams( { "sla": {"visualCompleteTime": 2000} } )`
+|sla|object|-|Overwrite the default `sla` settings. Example: `getApiParams( { "sla": {"visualCompleteTime": 2000} } )`
 |debug|boolean|`false`|Receive extra debug information from the API
 |esTrace|boolean|`false`|Request Elasticsearch query information from the API
 |esCreate|boolean|`true`|Save the result to elasticsearch
@@ -127,12 +132,13 @@ Collect or overwrite the default parameters (see above) to be send to the API. N
 |perc|number|`75`|Percentile of the baseline to be calculated
 |padding|number|`1.2`|Multiplier to calculate extra padding on top of the baseline
 |searchUrl|string|`''`|Wildcard to use for baseline (instead of using the submitted URL)
+|multirun|object|-|Object that holds information for multi-run tests. Mandatory keys are `totalRuns`, `currentRun` and `id`
 |log|object|-|Object that holds the keys to be logged. Can be used to overwrite the defaults or add extra keys!
 
-Example:<br>
+Example:
 
 ```javascript
-getApiParams( { "sla": { "pageLoadTime": 5000 }, "debug": true})
+getApiParams( { "sla": { "pageLoadTime": 5000 }, "multirun": {"totalRuns": 5, "currentRun": 1, "id": "ofjoa90834r0qfh"}, "debug": true})
 ```
 
 Returns:
@@ -154,6 +160,11 @@ Returns:
         "esCreate": false,
         "passOnFailedAssert": false
     },
+    "multirun": {
+        "totalRuns": 5,
+        "currentRun": 1,
+        "id": "ofjoa90834r0qfh"
+    }
     "log": {
         "test_info": "Sample test_info",
         "env_tester": "Sample tester",
@@ -176,10 +187,10 @@ Get the "inject code" from the API
 |visualCompleteMark|No|string|`false`|The name of the visual complete mark|
 |stripQueryString|No|boolean|`false`|Indicates whether you want to strip the querystring from the URL you are testing|
 
-Example:<br>
+Example:
 
 ```javascript
-getInjectJS( "navtiming", "visual_complate", true )
+getInjectJS( "navtiming", "visual_complete", true )
 ```
 
 Returns:
@@ -215,7 +226,7 @@ Post apitiming performance data to the API
 
 |param|type|required|default|description|
 |-|-|-|-|-|
-|timing|object|Yes|-|Contains the start- and stop-timestamps that you set before and after running the API test. Example:<br>`{"startTime": 1515443109031, "endTime": 1515443109046}` |
+|timing|object|Yes|-|Contains the start- and stop-timestamps that you set before and after running the API test. Example: `{"startTime": 1515443109031, "endTime": 1515443109046}` |
 |url|string|Yes|-|The URL of the API you're testing|
 |apiParams|object|Yes|-|Contains the API params that you retrieved from the `getApiParams()` method|
 
