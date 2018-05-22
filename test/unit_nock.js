@@ -11,7 +11,7 @@ const nockURL = new URL(perf.params.PERF_API_URL);
 
 describe('Testing with "nock" server - should be able to:', function () {
 
-  it('retrieve JS code from [injectjs]', function (done) {
+  it('retrieve JS code from [injectjs]', function () {
     nock(nockURL.origin)
       .post(nockURL.pathname + 'injectjs')
       .reply(200, {
@@ -23,15 +23,14 @@ describe('Testing with "nock" server - should be able to:', function () {
         assert.isString(response.data.inject_code);
         assert.isString(decodeURIComponent(response.data.inject_code));
         assert.include(decodeURIComponent(response.data.inject_code), 'url: document.location.href', 'has the expected text!');
-        done();
       })
       .catch(err => {
         console.warn(`API error: code: ${err.code} - message: ${err.message}`);
-        return done(err);
+        return (err);
       });
   });
 
-  it('get expected result from [navtiming]', function (done) {
+  it('get expected result from [navtiming]', function () {
     nock(nockURL.origin)
       .post(nockURL.pathname + 'navtiming')
       .reply(200, {
@@ -44,15 +43,14 @@ describe('Testing with "nock" server - should be able to:', function () {
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[navtiming] response did not include the [export] key!');
-        done();
       })
       .catch(err => {
         console.warn(`API error: code: ${err.code} - message: ${err.message}`);
-        return done(err);
+        return (err);
       });
   });
 
-  it('get expected result from  [usertiming]', function (done) {
+  it('get expected result from  [usertiming]', function () {
     nock(nockURL.origin)
       .post(nockURL.pathname + 'usertiming')
       .reply(200, {
@@ -65,15 +63,14 @@ describe('Testing with "nock" server - should be able to:', function () {
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[usertiming] response did not include the [export] key!');
-        done();
       })
       .catch(err => {
         console.warn(`API error: code: ${err.code} - message: ${err.message}`);
-        return done(err);
+        return (err);
       });
   });
 
-  it('get expected result from  [apitiming]', function (done) {
+  it('get expected result from  [apitiming]', function () {
     nock(nockURL.origin)
       .post(nockURL.pathname + 'apitiming')
       .reply(200, {
@@ -86,11 +83,29 @@ describe('Testing with "nock" server - should be able to:', function () {
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
         assert.property(response.data, 'export', '[apitiming] response did not include the [export] key!');
-        done();
       })
       .catch(err => {
         console.warn(`API error: code: ${err.code} - message: ${err.message}`);
-        return done(err);
+        return (err);
+      });
+  });
+
+  it('get expected result for [multirun]', function () {
+    nock(nockURL.origin)
+      .post(nockURL.pathname + 'navtiming')
+      .reply(200, {
+        acknowledge: true,
+        export: 'lorem ipsum'
+      });
+
+    const apiParams = perf.getApiParams({ multirun: { totalRuns: 3, currentRun: 1 }});
+    return perf.navtiming(sampleData.navtiming.timing, sampleData.navtiming.url, apiParams)
+      .then(response => {
+        assert.isTrue(response.data.acknowledge, 'expected the [acknowledge] field to be True!');
+      })
+      .catch(err => {
+        console.warn(`API error: code: ${err.code} - message: ${err.message}`);
+        return (err);
       });
   });
 });
