@@ -1,48 +1,48 @@
 {
-  "name": "timings-client-js",
-  "version": "0.0.0-development",
-  "description": "Plugin for perf-api to support JavaScript based test environments",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha",
-    "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "semantic-release"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/godaddy/timings-client-js.git"
-  },
-  "bugs": {
-    "url": "https://github.com/godaddy/timings-client-js/issues"
-  },
-  "keywords": [
-    "timings",
-    "helper",
-    "performance",
-    "kibana",
-    "elasticsearch",
-    "perftiming"
-  ],
-  "homepage": "https://github.com/godaddy/timings-client-js",
-  "author": "GoDaddy Operating Company, LLC",
-  "contributors": [
-    "Marcel Verkerk <mverkerk@godaddy.com>",
-    "Gergely Nemeth <gnemeth@godaddy.com>"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "axios": "^0.16.1"
-  },
-  "devDependencies": {
-    "async": "^2.0.0-rc.2",
-    "chai": "^3.2.0",
-    "eslint": "^4.7.0",
-    "eslint-config-godaddy": "^2.0.0",
-    "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-mocha": "^4.11.0",
-    "mocha": "^2.3.3",
-    "nock": "^9.0.22",
-    "semantic-release": "^12.4.1",
-    "travis-deploy-once": "^4.3.3"
-  }
+    "name": "timings-client-js",
+    "version": "0.0.0-development",
+    "description": "Plugin for perf-api to support JavaScript based test environments",
+    "main": "index.js",
+    "scripts": {
+        "test": "mocha",
+        "travis-deploy-once": "travis-deploy-once",
+        "semantic-release": "semantic-release"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/godaddy/timings-client-js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/godaddy/timings-client-js/issues"
+    },
+    "keywords": [
+        "timings",
+        "helper",
+        "performance",
+        "kibana",
+        "elasticsearch",
+        "perftiming"
+    ],
+    "homepage": "https://github.com/godaddy/timings-client-js",
+    "author": "GoDaddy Operating Company, LLC",
+    "contributors": [
+        "Marcel Verkerk <mverkerk@godaddy.com>",
+        "Gergely Nemeth <gnemeth@godaddy.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.19.0"
+    },
+    "devDependencies": {
+        "async": "^2.6.3",
+        "chai": "^4.2.0",
+        "eslint": "^4.19.1",
+        "eslint-config-godaddy": "^2.1.1",
+        "eslint-plugin-json": "^1.4.0",
+        "eslint-plugin-mocha": "^5.3.0",
+        "mocha": "^5.0.0",
+        "nock": "^9.6.1",
+        "semantic-release": "^15.13.18",
+        "travis-deploy-once": "^5.0.11"
+    }
 }
