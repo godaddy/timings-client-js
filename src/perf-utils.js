@@ -8,9 +8,13 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 
 class PUtils {
-  constructor(customConfig = null) {
+   constructor(customConfig = null) {
     this.defaultConfig = '../.config_sample.js';
-    this.params = this.fetchParams(customConfig);
+    if( customConfig && ((typeof customConfig ) === 'object')) {
+      this.params = customConfig
+    } else {
+      this.params = this.fetchParams(customConfig);
+    }
   }
 
   post(name, data) {
