@@ -71,6 +71,13 @@ const timings = require('timings-client-js');
 const perf = new timings.PUtils('.perftimings.js');
 ```
 
+Alternatively, you can pass an object of the perf timings file contents to declare your perf instantiation.
+```javascript
+const configFileObj = require('../../.perftimings');
+const timings = require('timings-client-js');
+const perf = new timings.PUtils(configFileObj);
+```
+
 With the client initiated, you can now call the different methods from your script. **NOTE:** the methods are Promise based! Use async methods like `.then((response) => {})` to capture the responses!
 
 ### Example script
