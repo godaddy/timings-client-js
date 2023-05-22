@@ -4,7 +4,7 @@ Client for [Timings API](https://www.github.com/godaddy/timings) to support **Ja
 
 ## NEW FEATURE [MULTI-RUN]
 
-The client now supports the new `multirun` feature that was introduces in version 1.3.0 of the API. If you want perform multiple runs of the same functional test but only have one of the runs be used for performance assertion, this feature is for you! Simply run your test script in a loop, calling the API during each loop but this time, add the `multirun` key to your POST payload to the `navtiming`, `usertiming` or `apitiming` endpoints. The API will save the performance data and upon the last run, it will pick the 75th percentile result and process that as if it were a normal result. The API will then return the usual response (including the `assert` field!). Hope you like it!
+The client now supports the new `multirun` feature that was introduces in version 1.3.0 of the the [timings API](https://www.github.com/godaddy/timings). If you want perform multiple runs of the same functional test but only have one of the runs be used for performance assertion, this feature is for you! Simply run your test script in a loop, calling the API during each loop but this time, add the `multirun` key to your POST payload to the `navtiming`, `usertiming` or `apitiming` endpoints. The API will save the performance data and upon the last run, it will pick the 75th percentile result and process that as if it were a normal result. The API will then return the usual response (including the `assert` field!). Hope you like it!
 
 ## Purpose
 
@@ -72,6 +72,7 @@ const perf = new timings.PUtils('.perftimings.js');
 ```
 
 Alternatively, you can pass an object of the perf timings file contents to declare your perf instantiation.
+
 ```javascript
 const configFileObj = require('../../.perftimings');
 const timings = require('timings-client-js');

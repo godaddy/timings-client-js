@@ -5,7 +5,7 @@ const nock = require('nock');
 const { URL } = require('url');
 
 const perfUtils = require('../src/perf-utils');
-const perf = new perfUtils.PUtils('.perf_config.js');
+const perf = new perfUtils.PUtils('./.config_sample.js');
 const sampleData = require('./data/sample-data');
 const nockURL = new URL(perf.params.PERF_API_URL);
 
@@ -38,7 +38,7 @@ describe('Testing with "nock" server - should be able to:', function () {
         export: 'some data'
       });
 
-    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 2500 }});
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 2500 } });
     return perf.navtiming(sampleData.navtiming.injectJS, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
@@ -58,7 +58,7 @@ describe('Testing with "nock" server - should be able to:', function () {
         export: 'some other data'
       });
 
-    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 1000 }});
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 1000 } });
     return perf.usertiming(sampleData.usertiming.injectJS, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
@@ -78,7 +78,7 @@ describe('Testing with "nock" server - should be able to:', function () {
         export: 'lorem ipsum'
       });
 
-    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 600 }});
+    const apiParams = perf.getApiParams({ sla: { pageLoadTime: 600 } });
     return perf.apitiming(sampleData.apitiming.timing, sampleData.apitiming.url, apiParams)
       .then(response => {
         assert.isTrue(response.data.assert, 'expected the [assert] field to be True!');
@@ -98,7 +98,7 @@ describe('Testing with "nock" server - should be able to:', function () {
         export: 'lorem ipsum'
       });
 
-    const apiParams = perf.getApiParams({ multirun: { totalRuns: 3, currentRun: 1 }});
+    const apiParams = perf.getApiParams({ multirun: { totalRuns: 3, currentRun: 1 } });
     return perf.navtiming(sampleData.navtiming.timing, sampleData.navtiming.url, apiParams)
       .then(response => {
         assert.isTrue(response.data.acknowledge, 'expected the [acknowledge] field to be True!');

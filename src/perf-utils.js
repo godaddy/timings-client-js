@@ -8,10 +8,10 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 
 class PUtils {
-   constructor(customConfig = null) {
+  constructor(customConfig = null) {
     this.defaultConfig = '../.config_sample.js';
-    if( customConfig && ((typeof customConfig ) === 'object')) {
-      this.params = customConfig
+    if (customConfig && ((typeof customConfig) === 'object')) {
+      this.params = customConfig;
     } else {
       this.params = this.fetchParams(customConfig);
     }
@@ -58,7 +58,7 @@ class PUtils {
       configFile = require(this.defaultConfig);
     }
 
-    if (configFile.hasOwnProperty('api_timeout')) {
+    if (Object.keys(configFile).includes('api_timeout')) {
       const apiTimeout = parseInt(configFile.api_timeout, 10);
       if (apiTimeout > 2000) {
         console.warn('timings-client-js - changing API timeout to: ' + apiTimeout);
