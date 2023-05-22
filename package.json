@@ -8,7 +8,9 @@
         "test": "nyc --reporter=cobertura npm run test:mocha",
         "test:mocha": "mocha test/**/*.js --exit",
         "semantic-release": "npx semantic-release --no-ci",
-        "semantic-release:dry-run": "npx semantic-release --dry-run --no-ci --branches `git rev-parse --abbrev-ref HEAD`"
+        "semantic-release:dry-run": "npx semantic-release --dry-run --no-ci --branches `git rev-parse --abbrev-ref HEAD`",
+        "prepare": "git config core.hooksPath .git/hooks/ && npx simple-git-hooks"
+
     },
     "repository": {
         "type": "git",
@@ -36,6 +38,8 @@
         "axios": "^1.4.0"
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.6.3",
+        "@commitlint/config-conventional": "^17.6.3",
         "async": "^3.2.4",
         "chai": "^4.3.7",
         "eslint": "^8.41.0",
@@ -45,6 +49,7 @@
         "mocha": "^10.2.0",
         "nock": "^13.3.1",
         "nyc": "^15.1.0",
-        "semantic-release": "^21.0.2"
+        "semantic-release": "^21.0.2",
+        "simple-git-hooks": "^2.8.1"
     }
 }
